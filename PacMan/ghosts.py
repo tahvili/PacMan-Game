@@ -13,21 +13,21 @@ class Ghost(MazeRunner):
         MazeRunner.__init__(self, nodes)
         self.name = "ghost"
         self.goal = Vector2(0, 0)
-        self.modeStack = self.setupModeStack()
+        self.modeStack = self.setup_mode_stack()
         self.mode = self.modeStack.pop()
         self.modetimer = 0
 
     def update(self, dt, pacman):
         displacement  = self.speed * self.mode.multiplier
         self.position += self.direction*displacement*dt
-        self.updateMode(dt)
+        self.update_mode(dt)
         if self.mode.name == "CHASE":
             self.chase(pacman)
         elif self.mode.name == "SCATTER":
             self.scatter()
         self.motion()
 
-    def validDirections(self):
+    def valid_directions(self):
         validDirections = []
         for key in self.node.neighbors.keys():
             if self.node.neighbors[key] is not None:
@@ -37,15 +37,15 @@ class Ghost(MazeRunner):
             validDirections.append(self.backtrack())
         return validDirections
 
-    def randmove(self, validDirections):
+    def rand_move(self, validDirections):
         move = randint(0, len(validDirections) - 1)
         return validDirections[move]
 
-    def closestDirection(self, validDirections):
+    def closest_direction(self, validDirections):
         distances = []
         for direction in validDirections:
             diffVec = self.node.position + direction * WIDTH - self.goal
-            distances.append(diffVec.magnitudeSquared())
+            distances.append(diffVec.magnitude_squared())
         move = distances.index(min(distances))
         return validDirections[move]
 
@@ -53,10 +53,10 @@ class Ghost(MazeRunner):
         if self.overshot():
             self.node = self.target
             self.teleport()
-            validDirections = self.validDirections()
-            self.direction = self.closestDirection(validDirections)
+            validDirections = self.valid_directions()
+            self.direction = self.closest_direction(validDirections)
             self.target = self.node.neighbors[self.direction]
-            self.setPosition()
+            self.set_position()
 
     def backtrack(self):
         if self.direction * -1 == UP:
@@ -68,7 +68,7 @@ class Ghost(MazeRunner):
         if self.direction * -1 == RIGHT:
             return RIGHT
 
-    def setupModeStack(self):
+    def setup_mode_stack(self):
         modes = Stack()
         modes.push(Mode(name="CHASE"))
         modes.push(Mode(name="SCATTER", timer=5))
@@ -86,7 +86,7 @@ class Ghost(MazeRunner):
     def chase(self, pacman):
         self.goal = pacman.position
 
-    def updateMode(self, dt):
+    def update_mode(self, dt):
         self.modetimer += dt
         if self.mode.timer is not None:
             if self.modetimer >= self.mode.timer:
@@ -94,7 +94,7 @@ class Ghost(MazeRunner):
                 self.modetimer = 0
 
     def render(self, screen):
-        p = self.position.toTuple(True)
+        p = self.position.to_tuple(True)
         pygame.draw.circle(screen, self.color, p, self.radius)
 
 

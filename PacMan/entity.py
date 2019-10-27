@@ -16,9 +16,9 @@ class MazeRunner:
         self.nodes = nodes
         self.node = nodes.nodeList[0]
         self.target = self.node
-        self.setPosition()
+        self.set_position()
 
-    def setPosition(self):
+    def set_position(self):
         """
         This method creates a node for pacman's position on screen
         for a simpler explanation, it just sets its position to a node
@@ -54,7 +54,7 @@ class MazeRunner:
                 if self.node.neighbors[self.direction] is not None:
                     self.target = self.node.neighbors[self.direction]
                 else:
-                    self.setPosition()
+                    self.set_position()
                     self.direction = STOP
 
     def overshot(self):
@@ -67,10 +67,10 @@ class MazeRunner:
         if self.target is not None:
             postarget = self.target.position - self.node.position
             poscurrent = self.position - self.node.position
-            # Use magnitudeSquared because we are comparing distances, no need
+            # Use magnitude_squared because we are comparing distances, no need
             # for square root
-            targetnode = postarget.magnitudeSquared()
-            currentnode = poscurrent.magnitudeSquared()
+            targetnode = postarget.magnitude_squared()
+            currentnode = poscurrent.magnitude_squared()
             return currentnode >= targetnode
         return False
 
@@ -101,5 +101,5 @@ class MazeRunner:
         """
         if self.node.portals:
             self.node = self.node.portals
-            self.setPosition()
+            self.set_position()
 

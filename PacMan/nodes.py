@@ -50,9 +50,9 @@ class Node:
         """
         for n in self.neighbors.keys():
             if self.neighbors[n] is not None:
-                pygame.draw.line(screen, WHITE, self.position.toTuple(),
-                                 self.neighbors[n].position.toTuple(), 4)
-                pygame.draw.circle(screen, RED, self.position.toTuple(True), 12)
+                pygame.draw.line(screen, WHITE, self.position.to_tuple(),
+                                 self.neighbors[n].position.to_tuple(), 4)
+                pygame.draw.circle(screen, RED, self.position.to_tuple(True), 12)
 
 
 class NodeGroup:
@@ -73,17 +73,17 @@ class NodeGroup:
         self.nodeList = []
         self.homeList = []
         self.level = level
-        self.grid = self.readMazeFile(level)
+        self.grid = self.read_maze_file(level)
         self.homegrid = self.getHomeGrid()
         self.nodeStack = Stack()
         self.portalSymbols = ["1"]
         self.nodeSymbols = ["+", "H", "S"] + self.portalSymbols
         self.createNodeList(self.grid, self.nodeList)
         self.createNodeList(self.homegrid, self.homeList)
-        self.createPortals()
+        self.create_portals()
         #self.setHomeNodes()
 
-    def readMazeFile(self, textfile):
+    def read_maze_file(self, textfile):
         """
         Get information from files
         """
@@ -92,34 +92,34 @@ class NodeGroup:
         grid = [line.split(' ') for line in lines]
         return grid
 
-    def getHomeGrid(self):
+    def get_home_grid(self):
         return [['0', '0', '+', '0', '0'], ['0', '0', '|', '0', '0'], ['+', '0', '|', '0', '+'], ['+', '-', '+', '-', '+'], ['+', '0', '0', '0', '+']]
 
-    def createNodeList(self, grid, nodeList):
+    def create_node_list(self, grid, nodeList):
         """
         This method creates a map based on text file passed into the
         function
         """
 
-        startNode = self.getFirstNode(grid);
+        startNode = self.get_first_node(grid);
         self.nodeStack.push(startNode)
         while not self.nodeStack.is_empty():
             node = self.nodeStack.pop()
-            self.addNode(node, nodeList)
-            left = self.getPath(LEFT, node.row, node.column-1, nodeList, grid)
-            right = self.getPath(RIGHT, node.row, node.column+1, nodeList, grid)
-            top = self.getPath(UP, node.row - 1, node.column, nodeList, grid)
-            bottom = self.getPath(DOWN, node.row + 1, node.column, nodeList, grid)
+            self.add_node(node, nodeList)
+            left = self.get_path(LEFT, node.row, node.column - 1, nodeList, grid)
+            right = self.get_path(RIGHT, node.row, node.column + 1, nodeList, grid)
+            top = self.get_path(UP, node.row - 1, node.column, nodeList, grid)
+            bottom = self.get_path(DOWN, node.row + 1, node.column, nodeList, grid)
             node.neighbors[LEFT] = left
             node.neighbors[RIGHT] = right
             node.neighbors[UP] = top
             node.neighbors[DOWN] = bottom
-            self.addToStack(left, nodeList)
-            self.addToStack(right,  nodeList)
-            self.addToStack(top, nodeList)
-            self.addToStack(bottom, nodeList)
+            self.add_to_stack(left, nodeList)
+            self.add_to_stack(right, nodeList)
+            self.add_to_stack(top, nodeList)
+            self.add_to_stack(bottom, nodeList)
 
-    def getFirstNode(self, grid):
+    def get_first_node(self, grid):
         """
         This method will go into the grid list and find the first instance of a Node.
         This serves as our starting point before we go into the while loop.
@@ -136,7 +136,7 @@ class NodeGroup:
                     return node
         return None
 
-    def getNode(self, x, y, nodeList):
+    def get_node(self, x, y, nodeList):
         """
         This method simply looks for a node in the nodeList at the specified x and y position.
         If a node at this position exists, then it returns that Node object.
@@ -148,7 +148,7 @@ class NodeGroup:
 
         return None
 
-    def getNodeFromNode(self, node, nodeList):
+    def get_node_from_node(self, node, nodeList):
         """
         what this method doesis look for the specified node in the nodeList.
         If the node exists in the nodeList, then the method will return the Node
@@ -165,36 +165,36 @@ class NodeGroup:
 
         return node
 
-    def getPath(self, direction, row, col, nodeList, grid):
+    def get_path(self, direction, row, col, nodeList, grid):
         """
         This method returns either a Node object or None. It follows a path in
         the specified direction and returns the Node object that is connected to
         the current node we're dealing with if there is one and if it already
         doesn't exist in the nodeList.
         """
-        tempNode = self.followPath(direction, row, col, grid)
-        return self.getNodeFromNode(tempNode, nodeList)
+        tempNode = self.follow_path(direction, row, col, grid)
+        return self.get_node_from_node(tempNode, nodeList)
 
-    def addNode(self, node, nodeList):
+    def add_node(self, node, nodeList):
         """
         This method simply adds a Node object to the nodeList if it already does
         not exist in the nodeList.
         """
-        nodeInList = self.nodeInList(node, nodeList)
+        nodeInList = self.node_in_list(node, nodeList)
         if not nodeInList:
             nodeList.append(node)
 
-    def addToStack(self, node, nodeList):
+    def add_to_stack(self, node, nodeList):
         """
         This method adds a node to the stack if it already hasn't been added to
         the nodeList.
         """
-        if node is not None and not self.nodeInList(node, nodeList):
+        if node is not None and not self.node_in_list(node, nodeList):
             self.nodeStack.push(node)
 
-    def nodeInList(self, node, nodeList):
+    def node_in_list(self, node, nodeList):
         """
-        This method is similar to the getNode method but instead of returning Nodes
+        This method is similar to the get_node method but instead of returning Nodes
         or None, it will return either True or False whether the specified node
         is in the nodeList or not.
         """
@@ -203,7 +203,7 @@ class NodeGroup:
                 return True
         return False
 
-    def createPortals(self):
+    def create_portals(self):
         """
         Since we have already created all the nodes in the list, all we have to
         do is loop through and create a new link/path between the portals on the
@@ -221,7 +221,7 @@ class NodeGroup:
             self.nodeList[node1].portals = self.nodeList[node2]
             self.nodeList[node2].portals = self.nodeList[node1]
 
-    def pathToFollow(self, direction, row, col, path, grid):
+    def path_to_follow(self, direction, row, col, path, grid):
         """
         Looks for certain items in the grid, until we run into a node
         with a different value
@@ -248,7 +248,7 @@ class NodeGroup:
         else:
             return None
 
-    def followPath(self, direction, row, col, grid):
+    def follow_path(self, direction, row, col, grid):
         """
         Follows path in all four directions
         """
@@ -256,13 +256,13 @@ class NodeGroup:
         columns = len(grid[0])
 
         if direction == LEFT and col >= 0:
-            return self.pathToFollow(LEFT, row, col, '-', grid)
+            return self.path_to_follow(LEFT, row, col, '-', grid)
         elif direction == RIGHT and col < columns:
-            return self.pathToFollow(RIGHT, row, col, "-", grid)
+            return self.path_to_follow(RIGHT, row, col, "-", grid)
         elif direction == UP and row >= 0:
-            return self.pathToFollow(UP, row, col, "|", grid)
+            return self.path_to_follow(UP, row, col, "|", grid)
         elif direction == DOWN and row < rows:
-            return self.pathToFollow(DOWN, row, col, "|", grid)
+            return self.path_to_follow(DOWN, row, col, "|", grid)
         else:
             return None
 

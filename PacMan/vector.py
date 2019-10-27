@@ -20,7 +20,7 @@ class Vector2(object):
         """
         return "<" + str(self.x) + ", " + str(self.y) + ">"
 
-    def toTuple(self, asints=False):
+    def to_tuple(self, asints=False):
 
         """
         This method just converts our vector into a tuple.
@@ -40,7 +40,7 @@ class Vector2(object):
         """
         return sqrt(self.x ** 2 + self.y ** 2)
 
-    def magnitudeSquared(self):
+    def magnitude_squared(self):
         """
         This is the same as magnitude, except it does nottake the square root.
         I find this one safer to use than the other magnitude method
@@ -102,7 +102,7 @@ class Vector2(object):
         """
         return Vector2(self.x, self.y)
 
-    def gettype(self, values):
+    def get_type(self, values):
         """
         This method takes the inputs and figures out how to parse it into the x
         and y values. If it can't parse the values, then it just returns a zero vector.
@@ -113,14 +113,14 @@ class Vector2(object):
         if len(values) == 1:
             if type(values[0]) is tuple or type(values[0]) is list:
                 if len(values[0]) == 2:
-                    x, y = self.setValues(values[0][0], values[0][1])
+                    x, y = self.set_values(values[0][0], values[0][1])
             elif len(values) == 2:
-                x, y = self.setValues(values[0], values[1])
+                x, y = self.set_values(values[0], values[1])
         return x, y
 
-    def setValues(self, v1, v2):
+    def set_values(self, v1, v2):
         """
-        Helper method for gettype
+        Helper method for get_type
         """
         x, y = (0, 0)
 

@@ -19,9 +19,9 @@ class Pacman(MazeRunner):
         self.name = "pacman"
         self.color = YELLOW
         self.lives = 3
-        self.startPosition()
+        self.start_position()
 
-    def decreaseLives(self):
+    def decrease_lives(self):
         """
         This method check if the Pac-Mans lives are not 0, then it decreases it by 1, returning False and if its lives
         is 0, then it returns True.
@@ -40,13 +40,13 @@ class Pacman(MazeRunner):
             if node.start:
                 return node
 
-    def startPosition(self):
+    def start_position(self):
         """
         Sets Pac-Man start position in the beginning of the game.
         """
         pass
 
-    def setPosition(self):
+    def set_position(self):
         """
         This method creates a node for pacman's position on screen
         for a simpler explanation, it just sets its position to a node
@@ -61,13 +61,13 @@ class Pacman(MazeRunner):
         checking if pacman can move in a direction or not.
         """
         self.position += self.direction * self.speed * dt
-        direction = self.getKeyPressed()
+        direction = self.get_key_pressed()
         if direction:
             self.move(direction)
         else:
             self.motion()
 
-    def getKeyPressed(self):
+    def get_key_pressed(self):
         """
         Look at the constants.py file
 
@@ -94,7 +94,7 @@ class Pacman(MazeRunner):
         """
         if self.node.portals:
             self.node = self.node.portals
-            self.setPosition()
+            self.set_position()
 
     def motion(self):
         """
@@ -115,7 +115,7 @@ class Pacman(MazeRunner):
                 if self.node.neighbors[self.direction] is not None:
                     self.target = self.node.neighbors[self.direction]
                 else:
-                    self.setPosition()
+                    self.set_position()
                     self.direction = STOP
 
     def overshot(self):
@@ -128,10 +128,10 @@ class Pacman(MazeRunner):
         if self.target is not None:
             postarget = self.target.position - self.node.position
             poscurrent = self.position - self.node.position
-            # Use magnitudeSquared because we are comparing distances, no need
+            # Use magnitude_squared because we are comparing distances, no need
             # for square root
-            targetnode = postarget.magnitudeSquared()
-            currentnode = poscurrent.magnitudeSquared()
+            targetnode = postarget.magnitude_squared()
+            currentnode = poscurrent.magnitude_squared()
             return currentnode >= targetnode
         return False
 
@@ -172,13 +172,13 @@ class Pacman(MazeRunner):
                 if self.node.neighbors[direction] is not None:
                     self.target = self.node.neighbors[direction]
                     if self.direction != direction:
-                        self.setPosition()
+                        self.set_position()
                         self.direction = direction
                 else:
                     if self.node.neighbors[self.direction] is not STOP:
                         self.target = self.node.neighbors[self.direction]
                     else:
-                        self.setPosition()
+                        self.set_position()
                         self.direction = STOP
 
     def render(self, screen):
@@ -186,5 +186,5 @@ class Pacman(MazeRunner):
         draws pacman on screen, which at this point is just a yellow circle
         and also drws him based on his position on screen
         """
-        pos = self.position.toTuple(True)
+        pos = self.position.to_tuple(True)
         pygame.draw.circle(screen, self.color, pos, self.radius)

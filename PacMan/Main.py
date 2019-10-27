@@ -21,11 +21,11 @@ class GameController:
         self.ghost = None
         self.screen = pygame.display.set_mode(SCREENSIZE, 0, 32)
         self.background = None
-        self.setBackground()
+        self.set_background()
         self.clock = pygame.time.Clock()
 
 
-    def setBackground(self):
+    def set_background(self):
         """
         We create a background and set it to the color BLACK that we defined in
         the constants.py file.
@@ -33,7 +33,7 @@ class GameController:
         self.background = pygame.surface.Surface(SCREENSIZE).convert()
         self.background.fill(BLACK)
 
-    def startGame(self):
+    def start_game(self):
 
         self.nodes = NodeGroup("maze.txt")
         self.pacman = Pacman(self.nodes)
@@ -47,10 +47,10 @@ class GameController:
         dt = self.clock.tick(30) / 1000.0
         self.pacman.update(dt)
         self.ghost.update(dt, self.pacman)
-        self.checkUpdater()
+        self.check_updater()
         self.render()
 
-    def checkUpdater(self):
+    def check_updater(self):
         """
         This method checks for certain events.
         Right now it is just checking to see when we exit out of the game.
@@ -76,6 +76,6 @@ class GameController:
 
 if __name__ == "__main__":
     game = GameController()
-    game.startGame()
+    game.start_game()
     while True:
         game.update()
