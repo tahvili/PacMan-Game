@@ -61,6 +61,7 @@ class GameController:
         for event in pygame.event.get():
             if event.type == QUIT:
                 exit()
+        self.check_collision()
 
     def render(self):
         """
@@ -76,6 +77,27 @@ class GameController:
         self.ghost.render(self.screen)
         pygame.display.update()
 
+    def check_collision(self):
+        """
+        This method finds the pellet collison and it has collided, it will
+        remove that pellet from the pellet list and then it will also update
+        the score accordingly.
+
+        """
+        pellete = self.pacman.collide_pellets(self.pellets.pellets_list)
+        if pellete:
+            self.pellets.pellets_list.remove(pellete)
+            self.pacman.get_score(pellete.points)
+        else:
+            pass
+
+    def get_score(self, points):
+        """
+        Updates the score with given points and return the final score.
+
+        """
+        self.pacman.score += points
+        return self.pacman.score
 
 if __name__ == "__main__":
     game = GameController()

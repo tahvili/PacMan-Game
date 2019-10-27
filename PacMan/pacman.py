@@ -188,3 +188,12 @@ class Pacman(MazeRunner):
         """
         pos = self.position.to_tuple(True)
         pygame.draw.circle(screen, self.color, pos, self.radius)
+
+    def collide_pellets(self, pellet_list):
+        """
+        This methods search the whole board for all the  pellet and see if the
+        pacman collided with any of them and then it returns that specific
+        pellet.
+
+        """
+        pass

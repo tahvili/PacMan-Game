@@ -11,6 +11,7 @@ class Pellets:
         self.color = YELLOW
         self.position = Vector2(x, y)
         self.radius = 4
+        self.points = 10
 
 
     def render(self, screen):
@@ -30,6 +31,7 @@ class Power_Pellets(Pellets):
         self.name = "power pellets"
         self.color = YELLOW
         self.radius = 8
+        self.points = 50
 
 
 
@@ -68,7 +70,7 @@ class Pellets_Group:
 
     def render(self, screen):
         """
-        the pellets are drawn 
+        the pellets are drawn
         """
         for i in self.pellets_list:
             i.render(screen)
