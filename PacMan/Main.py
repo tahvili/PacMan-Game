@@ -1,4 +1,3 @@
-
 import pygame
 from pygame.locals import *
 from constants import *
@@ -6,7 +5,7 @@ from pacman import Pacman
 from nodes import NodeGroup
 from ghosts import Ghost
 from pellets import Pellets_Group
-
+import welcome
 
 class GameController:
     """
@@ -24,7 +23,6 @@ class GameController:
         self.background = None
         self.set_background()
         self.clock = pygame.time.Clock()
-
 
     def set_background(self):
         """
@@ -98,9 +96,3 @@ class GameController:
         """
         self.pacman.score += points
         return self.pacman.score
-
-if __name__ == "__main__":
-    game = GameController()
-    game.start_game()
-    while True:
-        game.update()
