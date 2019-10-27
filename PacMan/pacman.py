@@ -18,6 +18,33 @@ class Pacman(MazeRunner):
         MazeRunner.__init__(self, nodes)
         self.name = "pacman"
         self.color = YELLOW
+        self.lives = 3
+        self.startPosition()
+
+    def decreaseLives(self):
+        """
+        This method check if the Pac-Mans lives are not 0, then it decreases it by 1, returning False and if its lives
+        is 0, then it returns True.
+        """
+        if self.lives == 0:
+            return True
+        else:
+            self.lives -= 1
+            return False
+
+    def start(self):
+        """
+        Sets the starting node for Pac-Man.
+        """
+        for node in self.nodes.nodeList:
+            if node.start:
+                return node
+
+    def startPosition(self):
+        """
+        Sets Pac-Man start position in the beginning of the game.
+        """
+        pass
 
     def setPosition(self):
         """

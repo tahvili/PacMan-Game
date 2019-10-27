@@ -40,6 +40,7 @@ class Node:
         self.portals = None
         self.portalval = 0
         self.homegrid = False
+        self.start = False
 
     def render(self, screen):
         """
@@ -76,11 +77,11 @@ class NodeGroup:
         self.homegrid = self.getHomeGrid()
         self.nodeStack = Stack()
         self.portalSymbols = ["1"]
-        self.nodeSymbols = ["+", "H"] + self.portalSymbols
+        self.nodeSymbols = ["+", "H", "S"] + self.portalSymbols
         self.createNodeList(self.grid, self.nodeList)
         self.createNodeList(self.homegrid, self.homeList)
         self.createPortals()
-        self.setHomeNodes()
+        #self.setHomeNodes()
 
     def readMazeFile(self, textfile):
         """
@@ -105,10 +106,10 @@ class NodeGroup:
         while not self.nodeStack.is_empty():
             node = self.nodeStack.pop()
             self.addNode(node, nodeList)
-            left = self.getPath(LEFT, node.row, node.column-1, nodeList)
-            right = self.getPath(RIGHT, node.row, node.column+1, nodeList)
-            top = self.getPath(UP, node.row - 1, node.column, nodeList)
-            bottom = self.getPath(DOWN, node.row + 1, node.column, nodeList)
+            left = self.getPath(LEFT, node.row, node.column-1, nodeList, grid)
+            right = self.getPath(RIGHT, node.row, node.column+1, nodeList, grid)
+            top = self.getPath(UP, node.row - 1, node.column, nodeList, grid)
+            bottom = self.getPath(DOWN, node.row + 1, node.column, nodeList, grid)
             node.neighbors[LEFT] = left
             node.neighbors[RIGHT] = right
             node.neighbors[UP] = top
@@ -239,6 +240,8 @@ class NodeGroup:
             node = Node(row, col)
             if grid[row][col] == "H":
                 node.homegrid = True
+            if grid[row][col] == "S":
+                node.start = True
             if grid[row][col] in self.portalSymbols:
                 node.portalval = grid[row][col]
             return node

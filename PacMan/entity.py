@@ -35,8 +35,6 @@ class MazeRunner:
         self.position += self.direction * self.speed * dt
         self.motion()
 
-
-
     def motion(self):
         """
         Pacman largely moves by himself without any human intervention.
