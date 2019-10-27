@@ -1,3 +1,4 @@
+
 import pygame
 from typing import*
 from vector import Vector2
@@ -38,6 +39,7 @@ class Node:
         self.neighbors = {UP: None, DOWN: None, LEFT: None, RIGHT: None}
         self.portals = None
         self.portalval = 0
+        self.homegrid = False
 
     def render(self, screen):
         """
@@ -68,13 +70,17 @@ class NodeGroup:
 
     def __init__(self, level):
         self.nodeList = []
+        self.homeList = []
         self.level = level
-        self.grid = None
+        self.grid = self.readMazeFile(level)
+        self.homegrid = self.getHomeGrid()
         self.nodeStack = Stack()
         self.portalSymbols = ["1"]
-        self.nodeSymbols = ["+"] + self.portalSymbols
-        self.createNodeList(level, self.nodeList)
+        self.nodeSymbols = ["+", "H"] + self.portalSymbols
+        self.createNodeList(self.grid, self.nodeList)
+        self.createNodeList(self.homegrid, self.homeList)
         self.createPortals()
+        self.setHomeNodes()
 
     def readMazeFile(self, textfile):
         """
@@ -85,14 +91,16 @@ class NodeGroup:
         grid = [line.split(' ') for line in lines]
         return grid
 
-    def createNodeList(self, textFile, nodeList):
+    def getHomeGrid(self):
+        return [['0', '0', '+', '0', '0'], ['0', '0', '|', '0', '0'], ['+', '0', '|', '0', '+'], ['+', '-', '+', '-', '+'], ['+', '0', '0', '0', '+']]
+
+    def createNodeList(self, grid, nodeList):
         """
         This method creates a map based on text file passed into the
         function
         """
 
-        self.grid = self.readMazeFile(textFile)
-        startNode = self.getFirstNode(len(self.grid), len(self.grid[0]))
+        startNode = self.getFirstNode(grid);
         self.nodeStack.push(startNode)
         while not self.nodeStack.is_empty():
             node = self.nodeStack.pop()
@@ -110,18 +118,20 @@ class NodeGroup:
             self.addToStack(top, nodeList)
             self.addToStack(bottom, nodeList)
 
-    def getFirstNode(self, rows, cols):
+    def getFirstNode(self, grid):
         """
         This method will go into the grid list and find the first instance of a Node.
         This serves as our starting point before we go into the while loop.
         """
+        rows  = len(grid)
+        cols = len(grid[0])
         nodeFound = False
         for i in range(rows):
             for j in range(cols):
-                if self.grid[i][j] in self.nodeSymbols:
+                if grid[i][j] in self.nodeSymbols:
                     node = Node(i, j)
-                    if self.grid[i][j] in self.portalSymbols:
-                        node.portalval = self.grid[i][j]
+                    if grid[i][j] in self.portalSymbols:
+                        node.portalval = grid[i][j]
                     return node
         return None
 
@@ -154,14 +164,14 @@ class NodeGroup:
 
         return node
 
-    def getPath(self, direction, row, col, nodeList):
+    def getPath(self, direction, row, col, nodeList, grid):
         """
         This method returns either a Node object or None. It follows a path in
         the specified direction and returns the Node object that is connected to
         the current node we're dealing with if there is one and if it already
         doesn't exist in the nodeList.
         """
-        tempNode = self.followPath(direction, row, col)
+        tempNode = self.followPath(direction, row, col, grid)
         return self.getNodeFromNode(tempNode, nodeList)
 
     def addNode(self, node, nodeList):
@@ -210,14 +220,14 @@ class NodeGroup:
             self.nodeList[node1].portals = self.nodeList[node2]
             self.nodeList[node2].portals = self.nodeList[node1]
 
-    def pathToFollow(self, direction, row, col, path):
+    def pathToFollow(self, direction, row, col, path, grid):
         """
         Looks for certain items in the grid, until we run into a node
         with a different value
         """
         tempSymbols = [path] + self.nodeSymbols
-        if self.grid[row][col] in tempSymbols:
-            while self.grid[row][col] not in self.nodeSymbols:
+        if grid[row][col] in tempSymbols:
+            while grid[row][col] not in self.nodeSymbols:
                 if direction is RIGHT:
                     col += 1
                 elif direction is LEFT:
@@ -227,27 +237,29 @@ class NodeGroup:
                 elif direction is DOWN:
                     row += 1
             node = Node(row, col)
-            if self.grid[row][col] in self.portalSymbols:
-                node.portalval = self.grid[row][col]
+            if grid[row][col] == "H":
+                node.homegrid = True
+            if grid[row][col] in self.portalSymbols:
+                node.portalval = grid[row][col]
             return node
         else:
             return None
 
-    def followPath(self, direction, row, col):
+    def followPath(self, direction, row, col, grid):
         """
         Follows path in all four directions
         """
-        rows = len(self.grid)
-        columns = len(self.grid[0])
+        rows = len(grid)
+        columns = len(grid[0])
 
         if direction == LEFT and col >= 0:
-            return self.pathToFollow(LEFT, row, col, '-')
+            return self.pathToFollow(LEFT, row, col, '-', grid)
         elif direction == RIGHT and col < columns:
-            return self.pathToFollow(RIGHT, row, col, "-")
+            return self.pathToFollow(RIGHT, row, col, "-", grid)
         elif direction == UP and row >= 0:
-            return self.pathToFollow(UP, row, col, "|")
+            return self.pathToFollow(UP, row, col, "|", grid)
         elif direction == DOWN and row < rows:
-            return self.pathToFollow(DOWN, row, col, "|")
+            return self.pathToFollow(DOWN, row, col, "|", grid)
         else:
             return None
 
@@ -256,5 +268,7 @@ class NodeGroup:
         draw all the nodes and paths in the NodeList
         """
         for node in self.nodeList:
+            node.render(screen)
+        for node in self.homeList:
             node.render(screen)
 

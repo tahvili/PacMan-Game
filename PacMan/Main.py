@@ -1,8 +1,10 @@
+
 import pygame
 from pygame.locals import *
 from constants import *
 from pacman import Pacman
 from nodes import NodeGroup
+from ghosts import Ghost
 
 
 class GameController:
@@ -14,6 +16,9 @@ class GameController:
 
     def __init__(self):
         pygame.init()
+        self.nodes = None
+        self.pacman = None
+        self.ghost = None
         self.screen = pygame.display.set_mode(SCREENSIZE, 0, 32)
         self.background = None
         self.setBackground()
@@ -32,6 +37,7 @@ class GameController:
 
         self.nodes = NodeGroup("maze.txt")
         self.pacman = Pacman(self.nodes)
+        self.ghost = Ghost(self.nodes)
 
     def update(self):
         """
@@ -40,6 +46,7 @@ class GameController:
         """
         dt = self.clock.tick(30) / 1000.0
         self.pacman.update(dt)
+        self.ghost.update(dt, self.pacman)
         self.checkUpdater()
         self.render()
 
@@ -63,6 +70,7 @@ class GameController:
         self.screen.blit(self.background, (0, 0))
         self.nodes.render(self.screen)
         self.pacman.render(self.screen)
+        self.ghost.render(self.screen)
         pygame.display.update()
 
 

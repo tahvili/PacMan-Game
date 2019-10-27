@@ -1,23 +1,22 @@
 
 import pygame
-from pygame.locals import *
 from vector import Vector2
 from constants import *
-from entity import MazeRunner
+from random import *
 
-
-class Pacman(MazeRunner):
-    """
-    The Pacman Class, everything in the class pertains to the player character
-    pacman. If you want to update something on pacman this is the class where you
-    do it so that it affects the player character.
-    """
+class MazeRunner:
 
     def __init__(self, nodes):
-
-        MazeRunner.__init__(self, nodes)
-        self.name = "pacman"
-        self.color = YELLOW
+        self.name = ""
+        self.direction = STOP
+        self.speed = 100
+        self.radius = 10
+        self.collideRadius = 5
+        self.color = WHITE
+        self.nodes = nodes
+        self.node = nodes.nodeList[0]
+        self.target = self.node
+        self.setPosition()
 
     def setPosition(self):
         """
@@ -34,40 +33,9 @@ class Pacman(MazeRunner):
         checking if pacman can move in a direction or not.
         """
         self.position += self.direction * self.speed * dt
-        direction = self.getKeyPressed()
-        if direction:
-            self.move(direction)
-        else:
-            self.motion()
+        self.motion()
 
-    def getKeyPressed(self):
-        """
-        Look at the constants.py file
 
-        We also check for key presses since we want to detect if the user is pressing the correct keys.
-        If we detect that the user has pressed either the UP, DOWN, LEFT, or RIGHT keys
-        then we call the move method and pass in the corresponding directions.
-        """
-        key_pressed = pygame.key.get_pressed()
-        if key_pressed[K_UP]:
-            return UP
-        if key_pressed[K_DOWN]:
-            return DOWN
-        if key_pressed[K_LEFT]:
-            return LEFT
-        if key_pressed[K_RIGHT]:
-            return RIGHT
-        return None
-
-    def teleport(self):
-        """
-        If pacman reaches a portal, then it teleports to the other
-        side of the screen(we set pacman's current node to the node on the
-        other portal node on the screen)
-        """
-        if self.node.portals:
-            self.node = self.node.portals
-            self.setPosition()
 
     def motion(self):
         """
@@ -126,38 +94,14 @@ class Pacman(MazeRunner):
         self.node = self.target
         self.target = temp
 
-    def move(self, direction):
-        """
-        This is the movement method, there is a lot to be discussed here
-        but I am not going to discuss it, as there is alot to explain, and nobody
-        will need to use this hopefully.
-        """
-        if self.direction is STOP:
-            if self.node.neighbors[direction] is not None:
-                self.target = self.node.neighbors[direction]
-                self.direction = direction
-        else:
-            if direction == self.direction * -1:
-                self.reverse()
-            if self.overshot():
-                self.node = self.target
-                self.teleport()
-                if self.node.neighbors[direction] is not None:
-                    self.target = self.node.neighbors[direction]
-                    if self.direction != direction:
-                        self.setPosition()
-                        self.direction = direction
-                else:
-                    if self.node.neighbors[self.direction] is not STOP:
-                        self.target = self.node.neighbors[self.direction]
-                    else:
-                        self.setPosition()
-                        self.direction = STOP
 
-    def render(self, screen):
+    def teleport(self):
         """
-        draws pacman on screen, which at this point is just a yellow circle
-        and also drws him based on his position on screen
+        If pacman reaches a portal, then it teleports to the other
+        side of the screen(we set pacman's current node to the node on the
+        other portal node on the screen)
         """
-        pos = self.position.toTuple(True)
-        pygame.draw.circle(screen, self.color, pos, self.radius)
+        if self.node.portals:
+            self.node = self.node.portals
+            self.setPosition()
+
