@@ -74,12 +74,12 @@ class NodeGroup:
         self.homeList = []
         self.level = level
         self.grid = self.read_maze_file(level)
-        self.homegrid = self.getHomeGrid()
+        self.homegrid = self.get_home_grid()
         self.nodeStack = Stack()
         self.portalSymbols = ["1"]
-        self.nodeSymbols = ["+", "H", "S"] + self.portalSymbols
-        self.createNodeList(self.grid, self.nodeList)
-        self.createNodeList(self.homegrid, self.homeList)
+        self.nodeSymbols = ["+", "H", "S", "n", "N"] + self.portalSymbols
+        self.create_node_list(self.grid, self.nodeList)
+        self.create_node_list(self.homegrid, self.homeList)
         self.create_portals()
         #self.setHomeNodes()
 
@@ -226,7 +226,7 @@ class NodeGroup:
         Looks for certain items in the grid, until we run into a node
         with a different value
         """
-        tempSymbols = [path] + self.nodeSymbols
+        tempSymbols = [path] + self.nodeSymbols + ["p"]
         if grid[row][col] in tempSymbols:
             while grid[row][col] not in self.nodeSymbols:
                 if direction is RIGHT:

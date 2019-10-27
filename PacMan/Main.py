@@ -5,6 +5,7 @@ from constants import *
 from pacman import Pacman
 from nodes import NodeGroup
 from ghosts import Ghost
+from pellets import Pellets_Group
 
 
 class GameController:
@@ -36,6 +37,7 @@ class GameController:
     def start_game(self):
 
         self.nodes = NodeGroup("maze.txt")
+        self.pellets = Pellets_Group("maze.txt")
         self.pacman = Pacman(self.nodes)
         self.ghost = Ghost(self.nodes)
 
@@ -69,6 +71,7 @@ class GameController:
 
         self.screen.blit(self.background, (0, 0))
         self.nodes.render(self.screen)
+        self.pellets.render(self.screen)
         self.pacman.render(self.screen)
         self.ghost.render(self.screen)
         pygame.display.update()
