@@ -79,7 +79,7 @@ class NodeGroup:
         self.portalSymbols = ["1"]
         self.nodeSymbols = ["+", "H", "S", "n", "N"] + self.portalSymbols
         self.create_node_list(self.grid, self.nodeList)
-        self.create_node_list(self.homegrid, self.homeList)
+        #self.create_node_list(self.homegrid, self.homeList)
         self.create_portals()
         #self.setHomeNodes()
 
@@ -101,7 +101,7 @@ class NodeGroup:
         function
         """
 
-        startNode = self.get_first_node(grid);
+        startNode = self.get_first_node(grid)
         self.nodeStack.push(startNode)
         while not self.nodeStack.is_empty():
             node = self.nodeStack.pop()
@@ -226,7 +226,7 @@ class NodeGroup:
         Looks for certain items in the grid, until we run into a node
         with a different value
         """
-        tempSymbols = [path] + self.nodeSymbols + ["p"]
+        tempSymbols = [path] + self.nodeSymbols + ["p", "P"]
         if grid[row][col] in tempSymbols:
             while grid[row][col] not in self.nodeSymbols:
                 if direction is RIGHT:

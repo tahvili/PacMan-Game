@@ -5,7 +5,6 @@ from pacman import Pacman
 from nodes import NodeGroup
 from ghosts import Ghost
 from pellets import Pellets_Group
-import welcome
 
 class GameController:
     """
