@@ -40,7 +40,7 @@ class Pellets_Group:
     def __init__(self, level):
         self.pellets_list = []
         self.pallets_symbols = ["p", "n"]
-        self.power_pellets_symbols = ["N"]
+        self.power_pellets_symbols = ["N", "P"]
         self.create_pellets_list(level)
 
     def read_maze_file(self, textfile):
