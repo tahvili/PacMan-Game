@@ -40,7 +40,10 @@ class Node:
         self.portals = None
         self.portalval = 0
         self.homegrid = False
-        self.start = False
+        self.restrict_entry = False
+        self.pacman_start = False
+        self.ghost_start = False
+        self.ghost_spawn = False
 
     def render(self, screen):
         """
@@ -77,11 +80,12 @@ class NodeGroup:
         self.homegrid = self.get_home_grid()
         self.nodeStack = Stack()
         self.portalSymbols = ["1"]
-        self.nodeSymbols = ["+", "H", "S", "n", "N"] + self.portalSymbols
+        self.pathSymbols = ["p", "P"]
+        self.nodeSymbols = ["+", "H", "S", "n", "N", "Y"] + self.portalSymbols
         self.create_node_list(self.grid, self.nodeList)
-        #self.create_node_list(self.homegrid, self.homeList)
+        self.create_node_list(self.homegrid, self.homeList)
         self.create_portals()
-        #self.setHomeNodes()
+        self.set_home_nodes()
 
     def read_maze_file(self, textfile):
         """
@@ -93,14 +97,13 @@ class NodeGroup:
         return grid
 
     def get_home_grid(self):
-        return [['0', '0', '+', '0', '0'], ['0', '0', '|', '0', '0'], ['+', '0', '|', '0', '+'], ['+', '-', '+', '-', '+'], ['+', '0', '0', '0', '+']]
+        return [['0', '0', '+', '0', '0'], ['0', '0', '|', '0', '0'], ['+', '0', '|', '0', '+'], ['+', '-', 'S', '-', '+'], ['+', '0', '0', '0', '+']]
 
     def create_node_list(self, grid, nodeList):
         """
         This method creates a map based on text file passed into the
         function
         """
-
         startNode = self.get_first_node(grid)
         self.nodeStack.push(startNode)
         while not self.nodeStack.is_empty():
@@ -124,7 +127,7 @@ class NodeGroup:
         This method will go into the grid list and find the first instance of a Node.
         This serves as our starting point before we go into the while loop.
         """
-        rows  = len(grid)
+        rows = len(grid)
         cols = len(grid[0])
         nodeFound = False
         for i in range(rows):
@@ -221,12 +224,31 @@ class NodeGroup:
             self.nodeList[node1].portals = self.nodeList[node2]
             self.nodeList[node2].portals = self.nodeList[node1]
 
+    def set_home_nodes(self):
+        for node in self.nodeList:
+            if node.homegrid:
+                node1 = node
+                break
+        node2 = node1.neighbors[LEFT]
+        mid = (node1.position + node2.position) / 2
+        mid = Vector2(int(mid.x), int(mid.y))
+        vec = Vector2(self.homeList[0].position.x, self.homeList[0].position.y)
+        for node in self.homeList:
+            node.position -= vec
+            node.position += mid
+        node1.neighbors[LEFT] = self.homeList[0]
+        node2.neighbors[RIGHT] = self.homeList[0]
+        self.homeList[0].neighbors[RIGHT] = node1
+        self.homeList[0].neighbors[LEFT] = node2
+        self.homeList[0].restrict_entry = True
+        self.homeList[0].ghost_start = True
+
     def path_to_follow(self, direction, row, col, path, grid):
         """
         Looks for certain items in the grid, until we run into a node
         with a different value
         """
-        tempSymbols = [path] + self.nodeSymbols + ["p", "P"]
+        tempSymbols = [path] + self.nodeSymbols + self.pathSymbols
         if grid[row][col] in tempSymbols:
             while grid[row][col] not in self.nodeSymbols:
                 if direction is RIGHT:
@@ -241,7 +263,9 @@ class NodeGroup:
             if grid[row][col] == "H":
                 node.homegrid = True
             if grid[row][col] == "S":
-                node.start = True
+                node.ghost_spawn = True
+            if grid[row][col] == "Y":
+                node.pacman_start = True
             if grid[row][col] in self.portalSymbols:
                 node.portalval = grid[row][col]
             return node

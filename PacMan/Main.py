@@ -1,10 +1,12 @@
 import pygame
 from pygame.locals import *
 from constants import *
-from pacman import Pacman
+from pacman import Pacman, LifeIcon
 from nodes import NodeGroup
-from ghosts import Ghost
+from ghosts import GhostGroup
 from pellets import Pellets_Group
+from Sprites import Spritesheet
+
 
 class GameController:
     """
@@ -17,7 +19,8 @@ class GameController:
         pygame.init()
         self.nodes = None
         self.pacman = None
-        self.ghost = None
+        self.ghosts = None
+        self.pellets_eaten = 0
         self.screen = pygame.display.set_mode(SCREENSIZE, 0, 32)
         self.background = None
         self.set_background()
@@ -33,10 +36,12 @@ class GameController:
 
     def start_game(self):
 
+        self.sheet = Spritesheet()
         self.nodes = NodeGroup("maze.txt")
         self.pellets = Pellets_Group("maze.txt")
-        self.pacman = Pacman(self.nodes)
-        self.ghost = Ghost(self.nodes)
+        self.pacman = Pacman(self.nodes, self.sheet)
+        self.ghosts = GhostGroup(self.nodes, self.sheet)
+        self.life_icons = LifeIcon(self.sheet)
 
     def update(self):
         """
@@ -45,9 +50,19 @@ class GameController:
         """
         dt = self.clock.tick(30) / 1000.0
         self.pacman.update(dt)
-        self.ghost.update(dt, self.pacman)
+        self.ghosts.update(dt, self.pacman)
         self.check_updater()
         self.render()
+
+    def check_ghost_collision(self):
+        self.ghosts.escape(self.pellets_eaten)
+        ghost = self.pacman.collide_ghost(self.ghosts.ghosts)
+        if ghost is not None:
+            if ghost.mode.name == "FEAR":
+                ghost.respawn()
+            elif ghost.mode.name != "SPAWN":
+                if self.pacman.decrease_lives():
+                    self.start_game()
 
     def check_updater(self):
         """
@@ -59,6 +74,7 @@ class GameController:
             if event.type == QUIT:
                 exit()
         self.check_collision()
+        self.check_ghost_collision()
 
     def render(self):
         """
@@ -71,7 +87,8 @@ class GameController:
         self.nodes.render(self.screen)
         self.pellets.render(self.screen)
         self.pacman.render(self.screen)
-        self.ghost.render(self.screen)
+        self.ghosts.render(self.screen)
+        self.life_icons.render(self.screen, self.pacman.lives-1)
         pygame.display.update()
 
     def check_collision(self):
@@ -84,7 +101,11 @@ class GameController:
         pellete = self.pacman.collide_pellets(self.pellets.pellets_list)
         if pellete:
             self.pellets.pellets_list.remove(pellete)
-            self.pacman.get_score(pellete.points)
+            # self.pacman.get_score(pellete.points)
+            self.pellets_eaten+=1
+            if pellete.name == "powerpellet":
+                self.pellets_eaten += 1
+                self.ghosts.engage_chase()
         else:
             pass
 

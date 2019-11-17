@@ -4,6 +4,7 @@ from pygame.locals import *
 from vector import Vector2
 from constants import *
 from entity import MazeRunner
+from Animation import Animation
 
 
 class Pacman(MazeRunner):
@@ -13,13 +14,17 @@ class Pacman(MazeRunner):
     do it so that it affects the player character.
     """
 
-    def __init__(self, nodes):
+    def __init__(self, nodes, sprite):
 
-        MazeRunner.__init__(self, nodes)
+        MazeRunner.__init__(self, nodes, sprite)
         self.name = "pacman"
         self.color = YELLOW
         self.lives = 3
-        self.start_position()
+        self.set_start_position()
+        #self.image = sprite.get_sprite(0, 1, 32, 32)
+        self.animation = None
+        self.animations = {}
+        self.define_animations()
 
     def decrease_lives(self):
         """
@@ -32,19 +37,15 @@ class Pacman(MazeRunner):
             self.lives -= 1
             return False
 
-    def start(self):
+    def set_start_position(self):
         """
         Sets the starting node for Pac-Man.
         """
-        for node in self.nodes.nodeList:
-            if node.start:
-                return node
-
-    def start_position(self):
-        """
-        Sets Pac-Man start position in the beginning of the game.
-        """
-        pass
+        self.direction = LEFT
+        self.node = self.get_start_node()
+        self.target = self.node.neighbors[self.direction]
+        self.set_position()
+        #self.position.x -= (self.node.position.x - self.target.position.x) / 2
 
     def set_position(self):
         """
@@ -66,6 +67,7 @@ class Pacman(MazeRunner):
             self.move(direction)
         else:
             self.motion()
+        self.update_animation(dt)
 
     def get_key_pressed(self):
         """
@@ -78,11 +80,11 @@ class Pacman(MazeRunner):
         key_pressed = pygame.key.get_pressed()
         if key_pressed[K_UP]:
             return UP
-        if key_pressed[K_DOWN]:
+        elif key_pressed[K_DOWN]:
             return DOWN
-        if key_pressed[K_LEFT]:
+        elif key_pressed[K_LEFT]:
             return LEFT
-        if key_pressed[K_RIGHT]:
+        elif key_pressed[K_RIGHT]:
             return RIGHT
         return None
 
@@ -167,13 +169,22 @@ class Pacman(MazeRunner):
             if direction == self.direction * -1:
                 self.reverse()
             if self.overshot():
+                if self.direction != direction:
+                    self.node = self.target
                 self.node = self.target
                 self.teleport()
                 if self.node.neighbors[direction] is not None:
-                    self.target = self.node.neighbors[direction]
-                    if self.direction != direction:
-                        self.set_position()
-                        self.direction = direction
+                    if self.node.restrict_entry:
+                        if self.node.neighbors[self.direction] is not None:
+                            self.target = self.node.neighbors[self.direction]
+                        else:
+                            self.set_position()
+                            self.direction = STOP
+                    else:
+                        self.target = self.node.neighbors[direction]
+                        if self.direction != direction:
+                            self.set_position()
+                            self.direction = direction
                 else:
                     if self.node.neighbors[self.direction] is not STOP:
                         self.target = self.node.neighbors[self.direction]
@@ -181,13 +192,13 @@ class Pacman(MazeRunner):
                         self.set_position()
                         self.direction = STOP
 
-    def render(self, screen):
-        """
-        draws pacman on screen, which at this point is just a yellow circle
-        and also drws him based on his position on screen
-        """
-        pos = self.position.to_tuple(True)
-        pygame.draw.circle(screen, self.color, pos, self.radius)
+    # def render(self, screen):
+    #     """
+    #     draws pacman on screen, which at this point is just a yellow circle
+    #     and also drws him based on his position on screen
+    #     """
+    #     pos = self.position.to_tuple(True)
+    #     pygame.draw.circle(screen, self.color, pos, self.radius)
 
     def collide_pellets(self, pellet_list):
         """
@@ -196,4 +207,106 @@ class Pacman(MazeRunner):
         pellet.
 
         """
-        pass
+        for pellet in pellet_list:
+            distance = self.position - pellet.position
+            pac_distance = distance.magnitude_squared()
+            pel_distance = (pellet.radius + self.collideRadius) ** 2
+            if pac_distance <= pel_distance:
+                return pellet
+        return None
+
+    def get_start_node(self):
+        for node in self.nodes.nodeList:
+            if node.pacman_start:
+                return node
+        return node
+
+    def collide_ghost(self, ghosts):
+        """
+        This methods search the whole board for all the  pellet and see if the
+        pacman collided with any of them and then it returns that specific
+        pellet.
+
+        """
+        for ghost in ghosts:
+            distance = self.position - ghost.position
+            pac_distance = distance.magnitude_squared()
+            ghost_distance = (ghost.collideRadius + ghost.collideRadius) ** 2
+            if pac_distance <= ghost_distance:
+                return ghost
+        return None
+
+    def update_animation(self, dt):
+        if self.direction == UP:
+            self.animation = self.animations["up"]
+        elif self.direction == DOWN:
+            self.animation = self.animations["down"]
+        elif self.direction == LEFT:
+            self.animation = self.animations["left"]
+        elif self.direction == RIGHT:
+            self.animation = self.animations["right"]
+        elif self.direction == STOP:
+            self.animation = self.animations["idle"]
+        self.image = self.animation.get_frame(dt)
+
+    def define_animations(self):
+        anim = Animation("ping")
+
+        anim.speed = 20
+        anim.add_frame(self.sprite.get_sprite(4, 0, 32, 32))
+        anim.add_frame(self.sprite.get_sprite(0, 0, 32, 32))
+        anim.add_frame(self.sprite.get_sprite(0, 1, 32, 32))
+        self.animations["left"] = anim
+
+        anim = Animation("ping")
+        anim.speed = 20
+        anim.add_frame(self.sprite.get_sprite(4, 0, 32, 32))
+        anim.add_frame(self.sprite.get_sprite(1, 0, 32, 32))
+        anim.add_frame(self.sprite.get_sprite(1, 1, 32, 32))
+        self.animations["right"] = anim
+
+        anim = Animation("ping")
+        anim.speed = 20
+        anim.add_frame(self.sprite.get_sprite(4, 0, 32, 32))
+        anim.add_frame(self.sprite.get_sprite(2, 0, 32, 32))
+        anim.add_frame(self.sprite.get_sprite(2, 1, 32, 32))
+        self.animations["down"] = anim
+
+        anim = Animation("ping")
+        anim.speed = 20
+        anim.add_frame(self.sprite.get_sprite(4, 0, 32, 32))
+        anim.add_frame(self.sprite.get_sprite(3, 0, 32, 32))
+        anim.add_frame(self.sprite.get_sprite(3, 1, 32, 32))
+        self.animations["up"] = anim
+
+        anim = Animation("once")
+        anim.speed = 10
+        anim.add_frame(self.sprite.get_sprite(0, 7, 32, 32))
+        anim.add_frame(self.sprite.get_sprite(1, 7, 32, 32))
+        anim.add_frame(self.sprite.get_sprite(2, 7, 32, 32))
+        anim.add_frame(self.sprite.get_sprite(3, 7, 32, 32))
+        anim.add_frame(self.sprite.get_sprite(4, 7, 32, 32))
+        anim.add_frame(self.sprite.get_sprite(5, 7, 32, 32))
+        anim.add_frame(self.sprite.get_sprite(6, 7, 32, 32))
+        anim.add_frame(self.sprite.get_sprite(7, 7, 32, 32))
+        anim.add_frame(self.sprite.get_sprite(8, 7, 32, 32))
+        anim.add_frame(self.sprite.get_sprite(9, 7, 32, 32))
+        anim.add_frame(self.sprite.get_sprite(10, 7, 32, 32))
+        self.animations["death"] = anim
+
+        anim = Animation("static")
+        anim.add_frame(self.sprite.get_sprite(4, 0, 32, 32))
+        self.animations["idle"] = anim
+
+class LifeIcon:
+
+    def __init__(self, spritesheet):
+        self.width, self.height = 32, 32
+        self.image = spritesheet.get_sprite(0, 1, self.width, self.height)
+        self.gap = 10
+
+    def render(self, screen, num):
+        for i in range(num):
+            x = self.gap + (self.width + self.gap) * i
+            y = HEIGHT * ROWS - self.height
+            screen.blit(self.image, (x, y))

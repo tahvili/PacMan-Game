@@ -11,6 +11,10 @@ BLACK = (0, 0, 0)
 YELLOW = (255, 255, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
+PINK = (255, 192, 203)
+TEAL = (0, 128, 128)
+ORANGE = (255, 127, 0)
+TRANSPARENT = (255,0,255)
 
 # Directions
 UP = Vector2(0, -1)

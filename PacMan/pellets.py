@@ -28,7 +28,7 @@ class Power_Pellets(Pellets):
 
     def __init__(self, x, y):
         Pellets.__init__(self, x, y)
-        self.name = "power pellets"
+        self.name = "powerpellet"
         self.color = YELLOW
         self.radius = 8
         self.points = 50
