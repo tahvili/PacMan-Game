@@ -6,7 +6,7 @@ from random import *
 
 class MazeRunner:
 
-    def __init__(self, nodes):
+    def __init__(self, nodes, sprite):
         self.name = ""
         self.direction = STOP
         self.speed = 100
@@ -17,6 +17,8 @@ class MazeRunner:
         self.node = nodes.nodeList[0]
         self.target = self.node
         self.set_position()
+        self.image = None
+        self.sprite = sprite
 
     def set_position(self):
         """
@@ -103,3 +105,10 @@ class MazeRunner:
             self.node = self.node.portals
             self.set_position()
 
+    def render(self, screen):
+        if self.image is not None:
+             p = self.position.to_tuple()
+             screen.blit(self.image, p)
+        else:
+            p = self.position.to_tuple(True)
+            pygame.draw.circle(screen, self.color, p, self.radius)

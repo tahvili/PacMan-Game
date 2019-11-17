@@ -6,7 +6,7 @@ and velocity. A vector is something that describes both magnitude and direction.
 Both of those are necessary in describing a vector.
 
 """
-class Vector2(object):
+class Vector2:
 
     def __init__(self, x, y):
         """
@@ -19,6 +19,10 @@ class Vector2(object):
         This method just creates a printable version of our vector. It is very useful for debugging purposes.
         """
         return "<" + str(self.x) + ", " + str(self.y) + ">"
+
+    def set(self, x):
+
+        self.x += x
 
     def to_tuple(self, asints=False):
 
