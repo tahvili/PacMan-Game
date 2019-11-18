@@ -10,7 +10,7 @@ class Pellets:
         self.name = "pellets"
         self.color = YELLOW
         self.position = Vector2(x, y)
-        self.radius = 4
+        self.radius = 2
         self.points = 10
 
 
@@ -20,6 +20,7 @@ class Pellets:
         and also draws the pellets on screen
         """
         pos = self.position.to_tuple(True)
+        pos = (int(pos[0]+WIDTH/2), int(pos[1]+WIDTH/2))
         pygame.draw.circle(screen, self.color, pos, self.radius)
 
 

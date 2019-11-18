@@ -79,7 +79,7 @@ class NodeGroup:
         self.grid = self.read_maze_file(level)
         self.homegrid = self.get_home_grid()
         self.nodeStack = Stack()
-        self.portalSymbols = ["1"]
+        self.portalSymbols = ["z"]
         self.pathSymbols = ["p", "P"]
         self.nodeSymbols = ["+", "H", "S", "n", "N", "Y"] + self.portalSymbols
         self.create_node_list(self.grid, self.nodeList)
@@ -153,7 +153,7 @@ class NodeGroup:
 
     def get_node_from_node(self, node, nodeList):
         """
-        what this method doesis look for the specified node in the nodeList.
+        what this method does is look for the specified node in the nodeList.
         If the node exists in the nodeList, then the method will return the Node
         object from the nodeList. If it doesn't exist in the nodeList, then it
         will just return the node that was initially inputted.
@@ -249,7 +249,9 @@ class NodeGroup:
         with a different value
         """
         tempSymbols = [path] + self.nodeSymbols + self.pathSymbols
+
         if grid[row][col] in tempSymbols:
+            print(grid[row][col])
             while grid[row][col] not in self.nodeSymbols:
                 if direction is RIGHT:
                     col += 1

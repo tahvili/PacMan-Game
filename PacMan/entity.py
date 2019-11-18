@@ -107,8 +107,7 @@ class MazeRunner:
 
     def render(self, screen):
         if self.image is not None:
-             p = self.position.to_tuple()
-             screen.blit(self.image, p)
-        else:
-            p = self.position.to_tuple(True)
-            pygame.draw.circle(screen, self.color, p, self.radius)
+             pos = self.position.to_tuple()
+             pos = (int(pos[0] - WIDTH / 2), int(pos[1] - WIDTH / 2))
+             screen.blit(self.image, pos)
+

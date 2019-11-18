@@ -5,7 +5,8 @@ from pacman import Pacman, LifeIcon
 from nodes import NodeGroup
 from ghosts import GhostGroup
 from pellets import Pellets_Group
-from Sprites import Spritesheet
+from sprites import Spritesheet
+from maze import Maze
 
 
 class GameController:
@@ -42,6 +43,9 @@ class GameController:
         self.pacman = Pacman(self.nodes, self.sheet)
         self.ghosts = GhostGroup(self.nodes, self.sheet)
         self.life_icons = LifeIcon(self.sheet)
+        self.maze = Maze(self.sheet)
+        self.maze.get_maze("maze")
+        self.maze.combine_maze(self.background)
 
     def update(self):
         """
@@ -84,7 +88,7 @@ class GameController:
         """
 
         self.screen.blit(self.background, (0, 0))
-        self.nodes.render(self.screen)
+        #self.nodes.render(self.screen)
         self.pellets.render(self.screen)
         self.pacman.render(self.screen)
         self.ghosts.render(self.screen)

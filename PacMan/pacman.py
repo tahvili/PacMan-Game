@@ -4,7 +4,7 @@ from pygame.locals import *
 from vector import Vector2
 from constants import *
 from entity import MazeRunner
-from Animation import Animation
+from animation import Animation
 
 
 class Pacman(MazeRunner):
