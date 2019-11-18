@@ -31,11 +31,13 @@ class Pacman(MazeRunner):
         This method check if the Pac-Mans lives are not 0, then it decreases it by 1, returning False and if its lives
         is 0, then it returns True.
         """
+        self.lives -= 1
         if self.lives == 0:
             return True
-        else:
-            self.lives -= 1
-            return False
+        return False
+
+    def reset(self):
+        self.set_start_position()
 
     def set_start_position(self):
         """
@@ -45,7 +47,7 @@ class Pacman(MazeRunner):
         self.node = self.get_start_node()
         self.target = self.node.neighbors[self.direction]
         self.set_position()
-        #self.position.x -= (self.node.position.x - self.target.position.x) / 2
+        self.position.x -= (self.node.position.x - self.target.position.x) / 2
 
     def set_position(self):
         """
