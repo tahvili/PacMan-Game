@@ -4,7 +4,7 @@ from constants import *
 from vector import Vector2
 from random import *
 from stack import Stack
-from Animation import Animation
+from animation import Animation
 
 
 class Ghost(MazeRunner):
@@ -49,7 +49,6 @@ class Ghost(MazeRunner):
             self.flee()
         elif self.mode.name == "SPAWN":
             self.goto_spawn()
-        print(self.mode.name)
         self.motion()
         self.update_animation(dt)
 
@@ -362,7 +361,7 @@ class Inky(Ghost):
         self.name = "inky"
         self.color = TEAL
         self.escaped = False
-        self.pellets_needed = 10
+        self.pellets_needed = 20
 
     def scatter(self):
         self.goal = Vector2(WIDTH*COLS, HEIGHT*ROWS)
@@ -389,7 +388,7 @@ class Clyde(Ghost):
         self.name = "clyde"
         self.color = ORANGE
         self.escaped = False
-        self.pellets_needed = 30
+        self.pellets_needed = 40
 
     def scatter(self):
         self.goal = Vector2(0, HEIGHT*ROWS)
