@@ -429,7 +429,6 @@ class GhostGroup:
             if not ghost.escaped:
                 if pellet_num >= ghost.pellets_needed:
                     ghost.bad_direction = []
-                    ghost.respawn()
                     ghost.escaped = True
 
     def render(self, screen):

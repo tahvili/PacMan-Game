@@ -43,6 +43,7 @@ class GameController:
         self.pacman = Pacman(self.nodes, self.sheet)
         self.ghosts = GhostGroup(self.nodes, self.sheet)
         self.life_icons = LifeIcon(self.sheet)
+        self.paused = False
         self.maze = Maze(self.sheet)
         self.maze.get_maze("maze")
         self.maze.combine_maze(self.background)
@@ -53,8 +54,9 @@ class GameController:
         It's basically our game loop
         """
         dt = self.clock.tick(30) / 1000.0
-        self.pacman.update(dt)
-        self.ghosts.update(dt, self.pacman)
+        if not self.paused:
+            self.pacman.update(dt)
+            self.ghosts.update(dt, self.pacman)
         self.check_updater()
         self.render()
 
@@ -65,8 +67,11 @@ class GameController:
             if ghost.mode.name == "FEAR":
                 ghost.respawn()
             elif ghost.mode.name != "SPAWN":
-                if self.pacman.decrease_lives():
+                if self.pacman.lives == 0:
                     self.start_game()
+                else:
+                    self.pacman.lives -= 1
+                    self.restart_level()
 
     def check_updater(self):
         """
@@ -77,6 +82,9 @@ class GameController:
         for event in pygame.event.get():
             if event.type == QUIT:
                 exit()
+            elif event.type == KEYDOWN:
+                if event.key == K_SPACE:
+                    self.paused = not self.paused
         self.check_collision()
         self.check_ghost_collision()
 
@@ -110,8 +118,16 @@ class GameController:
             if pellete.name == "powerpellet":
                 self.pellets_eaten += 1
                 self.ghosts.engage_chase()
+            if self.pellets.is_empty():
+                self.start_game()
         else:
             pass
+
+    def restart_level(self):
+        #self.pacman = Pacman(self.nodes, self.sheet)
+        self.pacman.reset()
+        self.ghosts = GhostGroup(self.nodes, self.sheet)
+        self.paused = True
 
     def get_score(self, points):
         """

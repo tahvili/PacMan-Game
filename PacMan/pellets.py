@@ -8,7 +8,7 @@ class Pellets:
     def __init__(self, x, y):
 
         self.name = "pellets"
-        self.color = YELLOW
+        self.color = WHITE
         self.position = Vector2(x, y)
         self.radius = 2
         self.points = 10
@@ -67,6 +67,9 @@ class Pellets_Group:
                     self.pellets_list.append(Pellets(col * WIDTH, row * HEIGHT))
                 if grid[row][col] in self.power_pellets_symbols:
                     self.pellets_list.append(Power_Pellets(col * WIDTH, row * HEIGHT))
+
+    def is_empty(self):
+        return self.pellets_list == []
 
 
     def render(self, screen):
