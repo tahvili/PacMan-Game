@@ -26,7 +26,7 @@ class Node:
     column: int
     portalval = 0
 
-    def __init__(self, row, column):
+    def __init__(self, row, column) -> None:
         """
         When we create a Node we pass in the row and column values and then
         compute the x and y position we want to place the Node on the screen.
@@ -45,7 +45,7 @@ class Node:
         self.ghost_start = False
         self.ghost_spawn = False
 
-    def render(self, screen):
+    def render(self, screen) -> None:
         """
         Render the Node so it appears on the screen.
         We draw all of the paths to the neighbors first as WHITE lines, and we
@@ -59,7 +59,6 @@ class Node:
 
 
 class NodeGroup:
-
     """
     This class links all the Nodes and ther pathhs to create a sort of
     Nodegroup to visually represent the pacman board for pacman to move around
@@ -72,7 +71,11 @@ class NodeGroup:
     portalSymbols: List
     nodeSymbols: List
 
-    def __init__(self, level):
+    def __init__(self, level: int) -> None:
+        """
+        Initialises the  Node Group.
+        """
+
         self.nodeList = []
         self.homeList = []
         self.level = level
@@ -87,19 +90,23 @@ class NodeGroup:
         self.create_portals()
         self.set_home_nodes()
 
-    def read_maze_file(self, textfile):
+    def read_maze_file(self, textfile: Any) -> Any:
         """
-        Get information from files
+        Get information from files.
         """
         f = open(textfile, "r")
         lines = [line.rstrip('\n') for line in f]
         grid = [line.split(' ') for line in lines]
         return grid
 
-    def get_home_grid(self):
+    def get_home_grid(self) -> List:
+        """
+        Returns the the positions of the ghost home in a list.
+        """
+
         return [['0', '0', '+', '0', '0'], ['0', '0', '|', '0', '0'], ['+', '0', '|', '0', '+'], ['+', '-', 'S', '-', '+'], ['+', '0', '0', '0', '+']]
 
-    def create_node_list(self, grid, nodeList):
+    def create_node_list(self, grid: List, nodeList: List) -> None:
         """
         This method creates a map based on text file passed into the
         function
@@ -122,7 +129,7 @@ class NodeGroup:
             self.add_to_stack(top, nodeList)
             self.add_to_stack(bottom, nodeList)
 
-    def get_first_node(self, grid):
+    def get_first_node(self, grid: List) -> Any:
         """
         This method will go into the grid list and find the first instance of a Node.
         This serves as our starting point before we go into the while loop.
@@ -139,7 +146,7 @@ class NodeGroup:
                     return node
         return None
 
-    def get_node(self, x, y, nodeList):
+    def get_node(self, x: int, y: int, nodeList: List) -> Any:
         """
         This method simply looks for a node in the nodeList at the specified x and y position.
         If a node at this position exists, then it returns that Node object.
@@ -151,7 +158,7 @@ class NodeGroup:
 
         return None
 
-    def get_node_from_node(self, node, nodeList):
+    def get_node_from_node(self, node: Any, nodeList: List) -> Any:
         """
         what this method does is look for the specified node in the nodeList.
         If the node exists in the nodeList, then the method will return the Node
@@ -168,7 +175,8 @@ class NodeGroup:
 
         return node
 
-    def get_path(self, direction, row, col, nodeList, grid):
+    def get_path(self, direction: Any, row: int, col: int, nodeList: List,
+                 grid: Any) -> Any:
         """
         This method returns either a Node object or None. It follows a path in
         the specified direction and returns the Node object that is connected to
@@ -178,7 +186,7 @@ class NodeGroup:
         tempNode = self.follow_path(direction, row, col, grid)
         return self.get_node_from_node(tempNode, nodeList)
 
-    def add_node(self, node, nodeList):
+    def add_node(self, node: Any, nodeList: List) -> None:
         """
         This method simply adds a Node object to the nodeList if it already does
         not exist in the nodeList.
@@ -187,7 +195,7 @@ class NodeGroup:
         if not nodeInList:
             nodeList.append(node)
 
-    def add_to_stack(self, node, nodeList):
+    def add_to_stack(self, node: Any, nodeList: List) -> None:
         """
         This method adds a node to the stack if it already hasn't been added to
         the nodeList.
@@ -195,22 +203,23 @@ class NodeGroup:
         if node is not None and not self.node_in_list(node, nodeList):
             self.nodeStack.push(node)
 
-    def node_in_list(self, node, nodeList):
+    def node_in_list(self, node: Any, nodeList: List) -> bool:
         """
-        This method is similar to the get_node method but instead of returning Nodes
-        or None, it will return either True or False whether the specified node
-        is in the nodeList or not.
+        This method is similar to the get_node method but instead of returning
+        Nodes or None, it will return either True or False whether the specified
+        node is in the nodeList or not.
         """
         for i in nodeList:
-            if node.position.x == i.position.x and node.position.y == i.position.y:
+            if node.position.x == i.position.x and node.position.y == \
+                    i.position.y:
                 return True
         return False
 
-    def create_portals(self):
+    def create_portals(self) -> None:
         """
         Since we have already created all the nodes in the list, all we have to
         do is loop through and create a new link/path between the portals on the
-        screen using the portalval variable.
+        screen using the portal val variable.
         """
         d = {}
         for i in range(len(self.nodeList)):
@@ -224,7 +233,11 @@ class NodeGroup:
             self.nodeList[node1].portals = self.nodeList[node2]
             self.nodeList[node2].portals = self.nodeList[node1]
 
-    def set_home_nodes(self):
+    def set_home_nodes(self) -> None:
+        """
+        Creates nodes from the home_list.
+        """
+
         for node in self.nodeList:
             if node.homegrid:
                 node1 = node
@@ -243,7 +256,8 @@ class NodeGroup:
         self.homeList[0].restrict_entry = True
         self.homeList[0].ghost_start = True
 
-    def path_to_follow(self, direction, row, col, path, grid):
+    def path_to_follow(self, direction: Any, row: int, col: int, path: str,
+                       grid: List) -> Any:
         """
         Looks for certain items in the grid, until we run into a node
         with a different value
@@ -274,7 +288,7 @@ class NodeGroup:
         else:
             return None
 
-    def follow_path(self, direction, row, col, grid):
+    def follow_path(self, direction: Any, row: int, col: int, grid: List) ->Any:
         """
         Follows path in all four directions
         """
@@ -292,7 +306,7 @@ class NodeGroup:
         else:
             return None
 
-    def render(self, screen):
+    def render(self, screen) -> None:
         """
         draw all the nodes and paths in the NodeList
         """
