@@ -2,7 +2,8 @@ import pygame
 from constants import *
 from Main import *
 
-class welcome:
+
+class Welcome:
     """
     This is the class that controls our basic welcome page, what this method does
     is to ask the user to press the start button to start the game
@@ -77,5 +78,5 @@ class welcome:
             clock.tick(fps)
 
 if __name__ == "__main__":
-    game = welcome()
+    game = Welcome()
     game.start()

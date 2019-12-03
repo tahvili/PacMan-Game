@@ -4,8 +4,8 @@ from vector import Vector2
 from constants import *
 from random import *
 
-class MazeRunner:
 
+class MazeRunner:
     def __init__(self, nodes, sprite):
         self.name = ""
         self.direction = STOP
@@ -96,6 +96,7 @@ class MazeRunner:
 
 
     def teleport(self):
+
         """
         If pacman reaches a portal, then it teleports to the other
         side of the screen(we set pacman's current node to the node on the

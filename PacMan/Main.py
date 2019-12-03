@@ -7,6 +7,7 @@ from ghosts import GhostGroup
 from pellets import Pellets_Group
 from sprites import Spritesheet
 from maze import Maze
+from welcome import Welcome
 
 
 class GameController:
@@ -21,6 +22,7 @@ class GameController:
         self.nodes = None
         self.pacman = None
         self.ghosts = None
+        self.game = None
         self.pellets_eaten = 0
         self.screen = pygame.display.set_mode(SCREENSIZE, 0, 32)
         self.background = None
@@ -110,6 +112,7 @@ class GameController:
         the score accordingly.
 
         """
+        self.paclives = self.pacman.lives
         pellete = self.pacman.collide_pellets(self.pellets.pellets_list)
         if pellete:
             self.pellets.pellets_list.remove(pellete)
@@ -120,14 +123,16 @@ class GameController:
                 self.ghosts.engage_chase()
             if self.pellets.is_empty():
                 self.start_game()
+                self.pacman.lives = self.paclives
         else:
             pass
 
     def restart_level(self):
-        #self.pacman = Pacman(self.nodes, self.sheet)
+
+        self.paused = True
         self.pacman.reset()
         self.ghosts = GhostGroup(self.nodes, self.sheet)
-        self.paused = True
+
 
     def get_score(self, points):
         """
