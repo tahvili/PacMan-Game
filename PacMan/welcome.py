@@ -1,6 +1,7 @@
 import pygame
 from constants import *
 from Main import *
+from typing import *
 
 
 class Welcome:
@@ -9,7 +10,10 @@ class Welcome:
     is to ask the user to press the start button to start the game
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """
+        This method initializes the game with a pygame window.
+        """
         pygame.init()
         self.nodes = None
         self.pacman = None
@@ -20,7 +24,7 @@ class Welcome:
         self.starter.set_background()
         self.clock = pygame.time.Clock()
 
-    def start(self):
+    def start(self) -> Optional[bool]:
         """
         This method will launch the welcome screen,
         and prompt the user to click on the start button to start the game

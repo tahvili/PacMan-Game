@@ -5,6 +5,7 @@ from vector import Vector2
 from constants import *
 from entity import MazeRunner
 from animation import Animation
+from typing import *
 
 
 class Pacman(MazeRunner):
@@ -14,34 +15,38 @@ class Pacman(MazeRunner):
     do it so that it affects the player character.
     """
 
-    def __init__(self, nodes, sprite):
-
+    def __init__(self, nodes: Any, sprite: Any) -> None:
+        """
+        Initialises the PacMan.
+        """
         MazeRunner.__init__(self, nodes, sprite)
         self.name = "pacman"
         self.color = YELLOW
         self.lives = 3
         self.set_start_position()
-        #self.image = sprite.get_sprite(0, 1, 32, 32)
         self.animation = None
         self.animations = {}
         self.define_animations()
 
-    def decrease_lives(self):
+    def decrease_lives(self) -> bool:
         """
-        This method check if the Pac-Mans lives are not 0, then it decreases it by 1, returning False and if its lives
-        is 0, then it returns True.
+        This method check if the PacMans lives are not 0, then it decreases it
+        by 1, returning False and if its lives is 0, then it returns True.
         """
         self.lives -= 1
         if self.lives == 0:
             return True
         return False
 
-    def reset(self):
+    def reset(self) -> None:
+        """
+        Resets the position of the PacMan.
+        """
         self.set_start_position()
 
-    def set_start_position(self):
+    def set_start_position(self) -> None:
         """
-        Sets the starting node for Pac-Man.
+        Sets the starting node for PacMan.
         """
         self.direction = LEFT
         self.node = self.get_start_node()
@@ -49,7 +54,7 @@ class Pacman(MazeRunner):
         self.set_position()
         self.position.x -= (self.node.position.x - self.target.position.x) / 2
 
-    def set_position(self):
+    def set_position(self) -> None:
         """
         This method creates a node for pacman's position on screen
         for a simpler explanation, it just sets its position to a node
@@ -57,11 +62,11 @@ class Pacman(MazeRunner):
         """
         self.position = self.node.position.copy()
 
-    def update(self, dt):
+    def update(self, dt: Any) -> None:
         """
-        Gets Pacman moving in a set direction, this method, is an overidden
-        method per frame in the Game, so we always have the latest keypresses and
-        checking if pacman can move in a direction or not.
+        Gets PacMan moving in a set direction. This method is an over-ridden
+        method per frame in the Game, so we always have the latest key
+        presses to check if PacMan can move in a direction or not.
         """
         self.position += self.direction * self.speed * dt
         direction = self.get_key_pressed()
@@ -71,13 +76,16 @@ class Pacman(MazeRunner):
             self.motion()
         self.update_animation(dt)
 
-    def get_key_pressed(self):
+    def get_key_pressed(self) -> Any:
         """
-        Look at the constants.py file
+        Look at the constants.py file.
 
-        We also check for key presses since we want to detect if the user is pressing the correct keys.
-        If we detect that the user has pressed either the UP, DOWN, LEFT, or RIGHT keys
-        then we call the move method and pass in the corresponding directions.
+        We also check for key presses since we want to detect if the user is
+        pressing the correct keys.
+
+        If we detect that the user has pressed either the UP, DOWN, LEFT, or
+        RIGHT keys then we call the move method and pass in the corresponding
+        directions.
         """
         key_pressed = pygame.key.get_pressed()
         if key_pressed[K_UP]:
@@ -90,26 +98,27 @@ class Pacman(MazeRunner):
             return RIGHT
         return None
 
-    def teleport(self):
+    def teleport(self) -> None:
         """
         If pacman reaches a portal, then it teleports to the other
-        side of the screen(we set pacman's current node to the node on the
+        side of the screen(we set PacMan's current node to the node on the
         other portal node on the screen)
         """
         if self.node.portals:
             self.node = self.node.portals
             self.set_position()
 
-    def motion(self):
+    def motion(self) -> None:
         """
-        Pacman largely moves by himself without any human intervention.
+        PacMan largely moves by himself without any human intervention.
         This method is called when the user isn't pressing any keys
-        telling him where to go. we check if pacman has stopped, if he hasn't
-        then we check id he has overshot his target node, then we allow him to keep
-        moving till he reaches his target that will make his stop, if he can still
-        move in any direction, then we set his target to be the node that is in the
-        direction that will make him stop, if this isn't the case then, pacman should
-        top or have not movement, and set his postion on the nodegroup as such.
+        telling him where to go. We check if PacMan has stopped, if he hasn't
+        then we check id he has overshot his target node, then we allow him to
+        keep moving till he reaches his target that will make his stop, if he
+        can still move in any direction, then we set his target to be the node
+        that is in the direction that will make him stop, if this isn't the case
+        then, PacMan should stop or have no movement, and set his position on
+        the nodegroup as such.
         """
 
         if self.direction is not STOP:
@@ -122,12 +131,12 @@ class Pacman(MazeRunner):
                     self.set_position()
                     self.direction = STOP
 
-    def overshot(self):
+    def overshot(self) -> bool:
         """
-        This new method checks to see if Pacman has overshot the target node he is moving towards.
-        If Pacman's distance is greater or equal to the distance between the two nodes,
-        then we say that he has overshot the target node.
-        returns true or false
+        This new method checks to see if PacMan has overshot the target node
+        he is moving towards.
+        If PacMan's distance is greater or equal to the distance between
+        the two nodes,then we say that he has overshot the target node.
         """
         if self.target is not None:
             postarget = self.target.position - self.node.position
@@ -139,10 +148,10 @@ class Pacman(MazeRunner):
             return currentnode >= targetnode
         return False
 
-    def reverse(self):
+    def reverse(self) -> None:
         """
-        Allows pacman to reverse his direction at anytime, if the direction
-        pacman is reversing to is not a neighbor it wont allow it, though it is
+        Allows PacMan to reverse his direction at anytime, if the direction
+        PacMan is reversing to is not a neighbor it won't allow it, though it is
         checked in this method.
         """
         if self.direction is UP:
@@ -157,11 +166,10 @@ class Pacman(MazeRunner):
         self.node = self.target
         self.target = temp
 
-    def move(self, direction):
+    def move(self, direction: Any) -> None:
         """
-        This is the movement method, there is a lot to be discussed here
-        but I am not going to discuss it, as there is alot to explain, and nobody
-        will need to use this hopefully.
+        This is the movement method, we check if PacMan can move in that
+        direction or not and update the pygame accordingly.
         """
         if self.direction is STOP:
             if self.node.neighbors[direction] is not None:
@@ -194,18 +202,10 @@ class Pacman(MazeRunner):
                         self.set_position()
                         self.direction = STOP
 
-    # def render(self, screen):
-    #     """
-    #     draws pacman on screen, which at this point is just a yellow circle
-    #     and also drws him based on his position on screen
-    #     """
-    #     pos = self.position.to_tuple(True)
-    #     pygame.draw.circle(screen, self.color, pos, self.radius)
-
-    def collide_pellets(self, pellet_list):
+    def collide_pellets(self, pellet_list: List) -> Any:
         """
         This methods search the whole board for all the  pellet and see if the
-        pacman collided with any of them and then it returns that specific
+        PacMan collided with any of them and then it returns that specific
         pellet.
 
         """
@@ -217,16 +217,20 @@ class Pacman(MazeRunner):
                 return pellet
         return None
 
-    def get_start_node(self):
+    def get_start_node(self) -> Any:
+        """
+        This method checks our node list for the starting position of the node
+        and returns it.
+        """
         for node in self.nodes.nodeList:
             if node.pacman_start:
                 return node
         return node
 
-    def collide_ghost(self, ghosts):
+    def collide_ghost(self, ghosts) -> Any:
         """
         This methods search the whole board for all the  pellet and see if the
-        pacman collided with any of them and then it returns that specific
+        PacMan collided with any of them and then it returns that specific
         pellet.
 
         """
@@ -238,7 +242,10 @@ class Pacman(MazeRunner):
                 return ghost
         return None
 
-    def update_animation(self, dt):
+    def update_animation(self, dt: Any) -> None:
+        """
+        Updates the animation.
+        """
         if self.direction == UP:
             self.animation = self.animations["up"]
         elif self.direction == DOWN:
@@ -251,7 +258,11 @@ class Pacman(MazeRunner):
             self.animation = self.animations["idle"]
         self.image = self.animation.get_frame(dt)
 
-    def define_animations(self):
+    def define_animations(self) -> None:
+        """
+        This method sets up the animation.
+        """
+
         anim = Animation("ping")
 
         anim.speed = 20
@@ -301,13 +312,23 @@ class Pacman(MazeRunner):
         self.animations["idle"] = anim
 
 class LifeIcon:
+    """
+    This class is a visual representation of the PacMan's lives.
+    """
 
-    def __init__(self, spritesheet):
+    def __init__(self, spritesheet: Any) -> None:
+        """
+        Initializes the lives of the PacMan on the pygame window.
+        """
+
         self.width, self.height = 32, 32
         self.image = spritesheet.get_sprite(0, 1, self.width, self.height)
         self.gap = 10
 
-    def render(self, screen, num):
+    def render(self, screen: Any, num: int) -> None:
+        """
+        This methods renders the lives on the screen.
+        """
         for i in range(num):
             x = self.gap + (self.width + self.gap) * i
             y = HEIGHT * ROWS - self.height
