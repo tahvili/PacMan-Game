@@ -31,7 +31,7 @@ class Vector2:
 
         self.x += x
 
-    def to_tuple(self, asints=False) -> Tuple(int, int):
+    def to_tuple(self, asints=False) -> Tuple[int, int]:
 
         """
         This method just converts our vector into a tuple.
