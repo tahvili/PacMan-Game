@@ -5,11 +5,12 @@ from vector import Vector2
 from random import *
 from stack import Stack
 from animation import Animation
+from typing import *
 
 
 class Ghost(MazeRunner):
 
-    def __init__(self, nodes, sprite):
+    def __init__(self, nodes: Any, sprite: Any):
         """
         Initialize the ghost as a mazerunner
         """
@@ -28,12 +29,16 @@ class Ghost(MazeRunner):
         self.animation  = None
         self.animations = {}
 
-    def set_start_position(self):
+    def set_start_position(self) -> None:
+        """
+        Sets the Ghost starting position on the game board
+        :return:
+        """
         self.node = self.get_start_node()
         self.target = self.node
         self.set_position()
 
-    def update(self, dt, pacman, blinky):
+    def update(self, dt: float, pacman: Any, blinky: Any) -> None:
         """
         Like pacman, we are assessing the Ghost movement in each
         frame.
@@ -52,7 +57,7 @@ class Ghost(MazeRunner):
         self.motion()
         self.update_animation(dt)
 
-    def valid_directions(self):
+    def valid_directions(self) -> Optional[Any]:
         """
         This method will build a list of valid directions that
         the ghost can move in.
@@ -79,7 +84,7 @@ class Ghost(MazeRunner):
 
         return validDirections
 
-    def rand_move(self, valid_directions):
+    def rand_move(self, valid_directions: Optional[Any]) -> Optional[Any]:
         """
         This method will get the list of directions the ghost can move in by
         calling the previous method we just created. Once it has that list of
@@ -88,7 +93,7 @@ class Ghost(MazeRunner):
         move = randint(0, len(valid_directions) - 1)
         return valid_directions[move]
 
-    def closest_direction(self, valid_directions):
+    def closest_direction(self, valid_directions: Optional[Any]) -> Optional[Any]:
         """
         What this method does is take the list of valid directions, and for each
         of the directions in the list it will calculate which direction will bring
@@ -104,16 +109,23 @@ class Ghost(MazeRunner):
         move = distances.index(min(distances))
         return valid_directions[move]
 
-    def find_spawn(self):
+    def find_spawn(self) -> Any:
+        """
+        Finds the ghost home on the game board
+        """
         for node in self.nodes.homeList:
             if node.ghost_spawn:
                 break
         return node
 
-    def goto_spawn(self):
+    def goto_spawn(self) -> None:
+        """
+        sets the ghost's goal attribute to be the position
+        in the ghost home
+        """
         self.goal = self.spawn.position
 
-    def motion(self):
+    def motion(self) -> None:
         """
         Similar to the motion method in the mazerunner class, except this \
         method except the ghost uses the valid moves method and randomly chooses
@@ -138,7 +150,7 @@ class Ghost(MazeRunner):
                     self.target = self.node.neighbors[self.direction]
                     self.set_position()
 
-    def backtrack(self):
+    def backtrack(self) -> Any:
         """
         To make the Ghost go backwards in case of a dead end is reached
         this method is there to suppliment that movement
@@ -153,7 +165,7 @@ class Ghost(MazeRunner):
             return RIGHT
 
 
-    def engage_chase(self):
+    def engage_chase(self) -> None:
         if self.mode.name != "SPAWN":
             if self.mode.name != "FEAR":
                 if self.mode.timer is not None:
@@ -167,16 +179,24 @@ class Ghost(MazeRunner):
                 self.mode = Mode("FEAR", timer=7, multiplier=0.5)
                 self.modetimer = 0
 
-    def flee(self):
+    def flee(self) -> None:
+        """
+        Sets the ghost's goal attribute to the corners of the
+        game board
+        """
         x = randint(0, COLS*WIDTH)
         y = randint(0, ROWS*HEIGHT)
         self.goal = Vector2(x,y)
 
-    def respawn(self):
+    def respawn(self) -> None:
+        """
+        Changes the ghosts state to the spawn state
+        which sets to ghost to run the game board
+        """
         self.mode = Mode("SPAWN", multiplier=2)
         self.modetimer = 0
 
-    def setup_mode_stack(self):
+    def setup_mode_stack(self) -> Any:
         """
         The Ghost has modes that randge for 20 seconds of chasing to
         5 seconsd og scattering from pacman to offere relief, this stack
@@ -194,14 +214,14 @@ class Ghost(MazeRunner):
         modes.push(Mode(name="SCATTER", timer=7))
         return modes
 
-    def scatter(self):
+    def scatter(self) -> None:
         """
         This method tells the ghost what his goal is when he is in scatter mode.
         This should correspond to the top right of the screen.
         """
         self.goal = Vector2(SCREENSIZE[0], 0)
 
-    def chase(self, pacman, blinky=None):
+    def chase(self, pacman: Any, blinky=None) -> None:
         """
         This method tells the ghost what his goal is when he is in chase mode.
         We are saying that his goal is Pacman's position.
@@ -210,7 +230,7 @@ class Ghost(MazeRunner):
         """
         self.goal = pacman.position
 
-    def update_mode(self, dt):
+    def update_mode(self, dt: float) -> None:
         """
         This method  keeps track of the time that has passed, and
         then pop off the next Ghost mode when it needs to
@@ -221,17 +241,26 @@ class Ghost(MazeRunner):
                 self.mode = self.modeStack.pop()
                 self.modetimer = 0
 
-    def get_start_node(self):
+    def get_start_node(self) -> Any:
+        """
+        Find the start node for the Ghost entity
+        """
         for node in self.nodes.homeList:
             if node.ghost_start:
                 return node
             return node
 
-    def set_guide_stack(self):
+    def set_guide_stack(self) -> None:
+        """
+        adds the up direction to the guide stack
+        """
         self.guide = Stack()
         self.guide.push(UP)
 
-    def define_animations(self, row):
+    def define_animations(self, row: int) -> None:
+        """
+        This method sets up the animation.
+        """
         anim = Animation("loop")
 
         anim.speed = 10
@@ -289,7 +318,10 @@ class Ghost(MazeRunner):
         anim.add_frame(self.sprite.get_sprite(7, 6, 32, 32))
         self.animations["spawnright"] = anim
 
-    def update_animation(self, dt):
+    def update_animation(self, dt: int) -> None:
+        """
+        Updates ghost's animation
+        """
         if self.mode.name == "CHASE" or self.mode.name == "SCATTER":
             if self.direction == UP:
                 self.animation = self.animations["up"]
@@ -312,40 +344,49 @@ class Ghost(MazeRunner):
                 self.animation = self.animations["spawnright"]
         self.image = self.animation.get_frame(dt)
 
-    # def render(self, screen):
-    #     """
-    #     Draws the ghost the ghost on the screen
-    #     """
-    #     p = self.position.to_tuple(True)
-    #     pygame.draw.circle(screen, self.color, p, self.radius)
-
 
 class Blinky(Ghost):
 
     def __init__(self, nodes, sprite):
+        """
+        Initializer for the Blinky class
+        """
         Ghost.__init__(self, nodes, sprite)
         self.define_animations(2)
-        #self.image = self.sprite.get_sprite(0, 2, 32, 32)
         self.name = "blinky"
         self.color = RED
 
 
 class Pinky(Ghost):
 
-    def __init__(self, nodes, sprite):
+    def __init__(self, nodes: Any, sprite: Any) -> None:
+        """
+        Initializer for the Pinky class
+        """
         Ghost.__init__(self, nodes, sprite)
         self.define_animations(3)
-        #self.image = self.sprite.get_sprite(0, 3, 32, 32)
         self.name = "pinky"
         self.color = PINK
 
-    def scatter(self):
+    def scatter(self) -> None:
+        """
+        Overridden method: sets the scatter figure to
+        be the top left of the game board
+        """
         self.goal = Vector2(0, 0)
 
-    def chase(self, pacman, blinky=None):
+    def chase(self, pacman: Any, blinky=None) -> None:
+        """
+        Overridden method: sets the chase figure to
+        be a position in front of Pacman entity
+        """
         self.goal = pacman.position + pacman.direction * WIDTH * 4
 
-    def set_start_position(self):
+    def set_start_position(self) -> None:
+        """
+        Overriden method: defines characters starting position
+        to be the middle of the ghost home
+        """
         start_node = self.get_start_node()
         self.node = start_node.neighbors[DOWN]
         self.target = self.node
@@ -354,24 +395,39 @@ class Pinky(Ghost):
 
 class Inky(Ghost):
 
-    def __init__(self, nodes, sprite):
+    def __init__(self, nodes: Any, sprite: Any) -> None:
+        """
+        Initializer for the Inky class
+        """
         Ghost.__init__(self, nodes, sprite)
         self.define_animations(4)
-        #self.image = self.sprite.get_sprite(0, 4, 32, 32)
         self.name = "inky"
         self.color = TEAL
         self.escaped = False
         self.pellets_needed = 20
 
-    def scatter(self):
+    def scatter(self) -> None:
+        """
+        Overridden method: sets the chase figure to
+        the bottom right of the game board
+        """
         self.goal = Vector2(WIDTH*COLS, HEIGHT*ROWS)
 
-    def chase(self, pacman, blinky=None):
+    def chase(self, pacman: Any, blinky=None) -> None:
+        """
+        Overridden method: sets the chase figure to
+        the know both pacman's and blinky's position to
+        be adjacent to their position.
+        """
         vec1 = pacman.position + pacman.direction * WIDTH * 2
         vec2 = (vec1 - blinky.position) * 2
         self.goal = blinky.position + vec2
 
-    def set_start_position(self):
+    def set_start_position(self) -> None:
+        """
+        Overridden method: sets Inky's correct starting position
+        left of the ghost home
+        """
         self.bad_direction = [RIGHT]
         start_node = self.get_start_node()
         pinky_node = start_node.neighbors[DOWN]
@@ -381,19 +437,30 @@ class Inky(Ghost):
 
 class Clyde(Ghost):
 
-    def __init__(self, nodes, sprite):
+    def __init__(self, nodes: Any, sprite: Any) -> None:
+        """
+        Initializer for the Clyde class
+        """
         Ghost.__init__(self, nodes, sprite)
         self.define_animations(5)
-        #self.image = self.sprite.get_sprite(0, 5, 32, 32)
         self.name = "clyde"
         self.color = ORANGE
         self.escaped = False
         self.pellets_needed = 40
 
-    def scatter(self):
+    def scatter(self) -> None:
+        """
+        Overridden method: scatter figure is set
+        to top right of the screen
+        """
         self.goal = Vector2(0, HEIGHT*ROWS)
 
-    def chase(self, pacman, blinky=None):
+    def chase(self, pacman: Any, blinky=None) -> None:
+        """
+        Overridden method: Clyde chases pacman
+        till he gets within 4 spaces of the character
+        then he scatters
+        """
         d = pacman.position - self.position
         ds = d.magnitude_squared()
         if ds <= (WIDTH*8)**2:
@@ -401,7 +468,12 @@ class Clyde(Ghost):
         else:
             self.goal = pacman.position + pacman.direction * WIDTH * 4
 
-    def set_start_position(self):
+    def set_start_position(self) -> None:
+        """
+        Overridden method:
+        Clyde's position is the right side of the
+        ghost home
+        """
         self.bad_direction = [LEFT]
         start_node = self.get_start_node()
         pinky_node = start_node.neighbors[DOWN]
@@ -412,26 +484,54 @@ class Clyde(Ghost):
 
 class GhostGroup:
 
-    def __init__(self, nodes, sprite):
+    """
+    This class carries all the individual ghosts and their
+    behaviours in a list so it is easier to add implentation
+    for  all these ghosts at once
+
+    see ==Main.py== for more uses
+    """
+
+    def __init__(self, nodes: Any, sprite: Any) -> None:
+        """
+        Initilaizer for the ghost group class
+        """
         self.nodes = nodes
         self.ghosts = [Blinky(nodes, sprite), Pinky(nodes, sprite),Inky(nodes, sprite), Clyde(nodes, sprite)]
 
-    def update(self, dt, pacman):
+    def update(self, dt: int, pacman: Any) -> None:
+        """
+        Calls the update methos for every ghost in
+        the ghosts list
+        """
         for ghost in self.ghosts:
             ghost.update(dt, pacman, self.ghosts[0])
 
-    def engage_chase(self):
+    def engage_chase(self) -> None:
+        """
+        Starts the chase for every ghost in the ghosts
+        list
+        """
         for ghost in self.ghosts:
             ghost.engage_chase()
 
-    def escape(self, pellet_num):
+    def escape(self, pellet_num) -> None:
+        """
+        This method allows special ghosts to exit
+        the ghost home after Pacman has collected a certain amount
+        of pellets aligning to the ghost's pellet needed attribute
+        """
         for ghost in self.ghosts:
             if not ghost.escaped:
                 if pellet_num >= ghost.pellets_needed:
                     ghost.bad_direction = []
                     ghost.escaped = True
 
-    def render(self, screen):
+    def render(self, screen) -> None:
+        """
+        Calls the render method for the ghosts
+        in the ghosts list
+        """
         for ghost in self.ghosts:
             ghost.render(screen)
 
@@ -441,7 +541,10 @@ class Mode:
     This class takes care of the Ghost modes and, a timer for when they are
     active as well as their movement speed
     """
-    def __init__(self, name="", timer=None, multiplier=1.0):
+    def __init__(self, name="", timer=None, multiplier=1.0) -> None:
+        """
+        Initialzer for the Mode class
+        """
         self.name = name
         self.timer = timer
         self.multiplier = multiplier

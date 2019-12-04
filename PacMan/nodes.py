@@ -1,9 +1,9 @@
 
 import pygame
-from typing import*
-from vector import Vector2
+from typing import *
 from constants import *
 from stack import Stack
+
 
 class Node:
 
