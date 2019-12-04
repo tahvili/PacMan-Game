@@ -62,13 +62,13 @@ The game will automatically proceed to the next level when you have successfully
 
 ## <a name="overview"></a>High-level Overview of Our Code
 
-There are seven main files that run this game. Welcome.py is the first file that needs to be ran to be able to open to game. This file creates the starting screen and runs Main.py. 
+There are seven main files that run this game. Welcome.py is the first file that needs to be run to be able to open to game. This file creates the starting screen and runs Main.py. 
 
-Main.py runs the class GameController which controls everything in the game. It controls the basic game loop, renders the game objects and updates the game. The remaining main files are the component of the game. Node.py content class Node and class NodeGroup. A node represents the special point on the board, for example, the path and the wall, the portal and the starting point of PacMan and the ghost. 
+Main.py runs the class GameController which controls everything in the game. It controls the basic game loop, renders the game objects and updates the game. The remaining main files are the components of the game. Node.py contains the classes, Node and NodeGroup. A node represents the special point on the board, for example, the path and the wall, the portal and the starting point of PacMan and the ghost. 
 
-Class NodeGroup is the basic grid of the board which is made up of the nodes. This grid is made up of reading the maze file. Next is file Entity.py that contents class MazeRunner. Class MazeRunner sets the movement of PacMan and Ghost. For Pacman.py, it contents class Pacman that inherent class MazeRunner. 
+The NodeGroup class is the basic grid of the board which is made up of the nodes. This grid is made up of reading the maze file. Next is the Entity.py file that contains the MazeRunner class. Class MazeRunner sets the movement of PacMan and Ghost. For Pacman.py, it contains the Pacman class that inherits the MazeRunner class. 
 
-Class Pacman sets the movement and the position of the PacMan and checks the collision between PacMan and Ghost also between PacMan and pellets. For file Ghosts.py, it contents class Ghost that inherits MazeRunner. Class Ghost sets the movement and the position of the ghosts. Lastly, file Pellets.py contents class Pellets and class PowerPellets. These classes set the position of the pellets and the power pellets.
+The Pacman class sets the movement and the position of the PacMan and checks the collision between PacMan and Ghost also between PacMan and pellets. For file Ghosts.py, it contains the Ghost class that inherits MazeRunner. Class Ghost sets the movement and the position of the ghosts. Lastly, file Pellets.py contains the Pellets and PowerPellets class. These classes set the position of the pellets and the power pellets.
 
 [Back to top](#top)
 
