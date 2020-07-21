@@ -1,4 +1,4 @@
-# Noname_Assignment
+# PacMan Game
 A PacMan duplicated game created using `python` and `pygame` by team No Name.
 
 ## Navigation
